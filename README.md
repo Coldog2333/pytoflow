@@ -10,7 +10,7 @@ What's more, you can describe it as the python version of the TOFlow presented t
 
 #### PyTorch
 
-  Our implementation is based on PyTorch 0.4.0 [https://pytorch.org/](https://pytorch.org/).
+  Our implementation is based on PyTorch 0.4.0 ([https://pytorch.org/](https://pytorch.org/)).
 
 #### PIL and matplotlib
 
@@ -22,11 +22,11 @@ What's more, you can describe it as the python version of the TOFlow presented t
 
 #### CUDA [optional]
 
-  CUDA is suggested [https://developer.nvidia.com/cuda-toolkit](https://developer.nvidia.com/cuda-toolkit) for fast inference. The demo code is still runnable without CUDA, but much slower.
+  CUDA is suggested ([https://developer.nvidia.com/cuda-toolkit](https://developer.nvidia.com/cuda-toolkit)) for fast inference. The demo code is still runnable without CUDA, but much slower.
 
 #### FFmpeg [optional]
 
-  We use FFmpeg [http://ffmpeg.org/](http://ffmpeg.org/) for processing videos. That's ok if you don't have a FFmpeg, but maybe it will cost you lot of time to processing.
+  We use FFmpeg ([http://ffmpeg.org/](http://ffmpeg.org/)) for processing videos. That's ok if you don't have a FFmpeg, but maybe it will cost you lot of time to processing.
 
 
 ## Installation
@@ -57,5 +57,5 @@ python3 run.py --f1 example/im1.png --f2 example/im3.png --o example/out.png --g
 
 ## References
 
-1. Xue T , Chen B , Wu J , et al. Video Enhancement with Task-Oriented Flow[J]. 2017.[http://arxiv.org/abs/1711.09078](http://arxiv.org/abs/1711.09078)
+1. Xue T , Chen B , Wu J , et al. Video Enhancement with Task-Oriented Flow[J]. 2017.([http://arxiv.org/abs/1711.09078](http://arxiv.org/abs/1711.09078))
 2. Our SpyNet is based on [sniklaus/pytorch-spynet](https://github.com/sniklaus/pytorch-spynet)

@@ -38,7 +38,7 @@ Our current release has been tested on Ubuntu 16.04 LTS.
 ```sh
 git clone https://github.com/Coldog2333/pytoflow.git
 ```
-#### Install some required package
+#### Install some required packages
 
 
 ## Usage
@@ -47,7 +47,7 @@ git clone https://github.com/Coldog2333/pytoflow.git
 python3 run.py --f1 example/im1.png --f2 example/im3.png --o example/out.png --gpuID 0
 ``` 
 
-#### Option
+#### Options
 
 + **--f1**: filename of the first frame
 + **--f2**: filename of the second frame

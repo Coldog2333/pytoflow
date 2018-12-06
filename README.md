@@ -3,30 +3,30 @@
 This repository is based on the paper 'TOFlow: Video Enhancement with Task-Oriented Flow'. It contains some pre-trained models and all of the codes we used including training code, Network structure and so on.
 
 
-What's more, you can describe it as the python version of the TOFlow present there ->  [toflow](https://github.com/anchen1011/toflow)
+What's more, you can describe it as the python version of the TOFlow presented there ->  [toflow](https://github.com/anchen1011/toflow)
 
 
 ## Prerequisites
 
 #### PyTorch
 
-Our implementation is based on PyTorch 0.4.0 [https://pytorch.org/](https://pytorch.org/).
+  Our implementation is based on PyTorch 0.4.0 [https://pytorch.org/](https://pytorch.org/).
 
 #### PIL and matplotlib
 
-For loading images.
+  For loading images.
 
 #### opencv-python(cv2)
 
-For processing videos.
+  For processing videos.
 
 #### CUDA [optional]
 
-CUDA is suggested [https://developer.nvidia.com/cuda-toolkit](https://developer.nvidia.com/cuda-toolkit) for fast inference. The demo code is still runnable without CUDA, but much slower.
+  CUDA is suggested [https://developer.nvidia.com/cuda-toolkit](https://developer.nvidia.com/cuda-toolkit) for fast inference. The demo code is still runnable without CUDA, but much slower.
 
 #### FFmpeg [optional]
 
-We use FFmpeg [http://ffmpeg.org/](http://ffmpeg.org/) for processing videos. That's ok if you don't have a FFmpeg, but maybe it will cost you lot of time to processing.
+  We use FFmpeg [http://ffmpeg.org/](http://ffmpeg.org/) for processing videos. That's ok if you don't have a FFmpeg, but maybe it will cost you lot of time to processing.
 
 
 ## Installation
@@ -38,6 +38,7 @@ Our current release has been tested on Ubuntu 16.04 LTS.
 ```sh
 git clone https://github.com/Coldog2333/pytoflow.git
 ```
+#### Install some required package
 
 
 ## Usage

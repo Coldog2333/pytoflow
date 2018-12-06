@@ -55,7 +55,6 @@ python3 run.py --f1 example/im1.png --f2 example/im3.png --o example/out.png --g
 + **--gpuID** [optional]: No of the GPU you want to use. default: no gpu.
 
 
-
 ## References
 
 1. Xue T , Chen B , Wu J , et al. Video Enhancement with Task-Oriented Flow[J]. 2017.[http://arxiv.org/abs/1711.09078](http://arxiv.org/abs/1711.09078)

@@ -7,21 +7,20 @@ arguments_strModel = 'F'        # SpyNet - Sintel final
 SpyNet_model_dir = './models/'  # SpyNet模型参数目录
 
 class TOFlow(torch.nn.Module):
-    def __init__(self, h, w, cuda):
+    def __init__(self, h, w, cuda_flag):
         super(TOFlow, self).__init__()
         self.height = h
         self.width = w
-        self.cuda = cuda
+        self.cuda_flag = cuda_flag
 
         class SpyNet(torch.nn.Module):
-            def __init__(self, cuda):
+            def __init__(self, cuda_flag):
                 super(SpyNet, self).__init__()
-                self.cuda = cuda
+                self.cuda_flag = cuda_flag
 
                 class Preprocess(torch.nn.Module):
                     def __init__(self):
                         super(Preprocess, self).__init__()
-
                     # end
 
                     # RGB normalization, but I forgot why we should do so.
@@ -75,9 +74,9 @@ class TOFlow(torch.nn.Module):
                 # end
 
                 class Backward(torch.nn.Module):
-                    def __init__(self, cuda):
+                    def __init__(self, cuda_flag):
                         super(Backward, self).__init__()
-                        self.cuda = cuda
+                        self.cuda_flag = cuda_flag
                     # end
 
                     def forward(self, tensorInput, tensorFlow):
@@ -95,7 +94,7 @@ class TOFlow(torch.nn.Module):
                                                                                                 tensorFlow.size(2), 1). \
                                 expand(tensorFlow.size(0), -1, -1, tensorFlow.size(3))
                             # mix them into a original flow. 组合成初始flow网格
-                            if self.cuda:
+                            if self.cuda_flag:
                                 self.tensorGrid = torch.cat([tensorHorizontal, tensorVertical], 1).cuda()
                             else:
                                 self.tensorGrid = torch.cat([tensorHorizontal, tensorVertical], 1)
@@ -116,7 +115,7 @@ class TOFlow(torch.nn.Module):
                 # initialize the weight of Gk in 6-layers pyramid. 初始化6层金字塔的Gk的权重
                 self.moduleBasic = torch.nn.ModuleList([Basic(intLevel) for intLevel in range(6)])
 
-                self.moduleBackward = Backward(cuda=self.cuda)
+                self.moduleBackward = Backward(cuda_flag=self.cuda_flag)
 
             # end
 
@@ -214,11 +213,11 @@ class TOFlow(torch.nn.Module):
                 return x
 
         class warp(torch.nn.Module):
-            def __init__(self, h, w, cuda=True):
+            def __init__(self, h, w, cuda_flag):
                 super(warp, self).__init__()
                 self.height = h
                 self.width = w
-                if cuda:
+                if cuda_flag:
                     self.addterm = self.init_addterm().cuda()
                 else:
                     self.addterm = self.init_addterm()
@@ -282,13 +281,13 @@ class TOFlow(torch.nn.Module):
                 return result
 
 
-        self.SpyNet = SpyNet(cuda=self.cuda)  # SpyNet层
+        self.SpyNet = SpyNet(cuda_flag=self.cuda_flag)  # SpyNet层
         # for param in self.SpyNet.parameters():  # fix
         #     param.requires_grad = False
 
         self.STN = STN()  # STN层
 
-        self.warp = warp(self.height, self.width, cuda=self.cuda)
+        self.warp = warp(self.height, self.width, cuda_flag=self.cuda_flag)
 
         self.ResNet = ResNet()
         # self.ResNet.apply(self.ResNet.initialize)

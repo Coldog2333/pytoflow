@@ -20,7 +20,7 @@ workplace = '.'
 frameFirstName = None
 frameSecondName = None
 frameOutName = os.path.join(workplace, 'out.png')
-cuda = False
+gpuID = None
 
 for strOption, strArgument in getopt.getopt(sys.argv[1:], '', [strParameter[2:] + '=' for strParameter in sys.argv[1::2]])[0]:
     if strOption == '--f1':          # first frame
@@ -29,17 +29,20 @@ for strOption, strArgument in getopt.getopt(sys.argv[1:], '', [strParameter[2:] 
         frameSecondName = strArgument
     elif strOption == '--o':         # out frame
         frameOutName = strArgument
-    elif strOption == '--cuda':
-        if strArgument == 'True':
-            cuda = True
+    elif strOption == '--gpuID':
+        gpuID = int(strArgument)
 
 if frameFirstName == None or frameSecondName == None:
     raise ('Missing [-f1 frameFirstName or -f2 frameSecondName].\nPlease enter the name of two frames.')
 
+if gpuID == None:
+    CUDA = False
+else:
+    CUDA = True
 # ------------------------------
 # 数据集中的图片长宽都弄成32的倍数了所以这里可以不用这个函数
 # 暂时只用于处理batch_size = 1的triple
-def Estimate(net, tensorFirst=None, tensorSecond=None, Firstfilename='', Secondfilename='', cuda=False):
+def Estimate(net, tensorFirst=None, tensorSecond=None, Firstfilename='', Secondfilename='', cuda_flag=False):
     """
     :param tensorFirst: 弄成FloatTensor格式的frameFirst
     :param tensorSecond: 弄成FloatTensor格式的frameSecond
@@ -61,7 +64,7 @@ def Estimate(net, tensorFirst=None, tensorSecond=None, Firstfilename='', Secondf
     # assert(intWidth == 448) # remember that there is no guarantee for correctness, comment this line out if you acknowledge this and want to continue
     # assert(intHeight == 256) # remember that there is no guarantee for correctness, comment this line out if you acknowledge this and want to continue
 
-    if cuda == True:
+    if cuda_flag == True:
         tensorFirst = tensorFirst.cuda()
         tensorSecond = tensorSecond.cuda()
         tensorOutput = tensorOutput.cuda()
@@ -97,6 +100,8 @@ def Estimate(net, tensorFirst=None, tensorSecond=None, Firstfilename='', Secondf
 
 # ------------------------------
 if __name__ == '__main__':
+    if CUDA:
+        torch.cuda.set_device(gpuID)
     temp_img = np.array(plt.imread(frameFirstName))
     height = temp_img.shape[0]
     width = temp_img.shape[1]
@@ -105,18 +110,19 @@ if __name__ == '__main__':
     intPreprocessedHeight = int(math.floor(math.ceil(height / 32.0) * 32.0))  # 长度弄成32的倍数，便于上下采样
 
     print('Loading TOFlow Net... ', end='')
-    net = TOFlow(intPreprocessedHeight, intPreprocessedWidth, cuda=cuda)
+    net = TOFlow(intPreprocessedHeight, intPreprocessedWidth, cuda_flag=CUDA)
     net.load_state_dict(torch.load(os.path.join(workplace, 'toflow_models', model_name + '.pkl')))
-    if cuda:
-        net.cuda().eval()
+    if CUDA:
+        net.eval().cuda()
     else:
         net.eval()
+
     print('Done.')
 
     # ------------------------------
     # generate(net=net, model_name=model_name, f1name=os.path.join(test_pic_dir, 'im1.png'),
     #         f2name=os.path.join(test_pic_dir, 'im3.png'), fname=outputname)
     print('Processing...')
-    predict = Estimate(net, Firstfilename=frameFirstName, Secondfilename=frameSecondName, cuda=cuda)
+    predict = Estimate(net, Firstfilename=frameFirstName, Secondfilename=frameSecondName, cuda_flag=CUDA)
     plt.imsave(frameOutName, predict)
     print('%s Saved.' % frameOutName)

@@ -1,140 +1,22 @@
-import os
 import math
-import numpy as np
-import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn
 import torch.utils.serialization
 
-UNKNOWN_FLOW_THRESH = 1e7
-arguments_strModel = 'F'
-SpyNet_model_dir = '/home/ftp/Coldog/DeepLearning/TOFlow/branch/models/'  # SpyNet模型参数目录
-
-
-class visualization():
-    def __init__(self):
-        self.colorwheel = self.create_colorwheel()
-
-    def create_colorwheel(self):
-        """
-        Generate color wheel according Middlebury color code
-        :return: Color wheel
-        """
-        RY, YG, GC, CB, BM, MR = (15, 6, 4, 11, 13, 6)
-        ncols = RY + YG + GC + CB + BM + MR
-
-        colorwheel = np.zeros((ncols, 3))
-        col = 0
-
-        colorwheel[0:RY, 0:1] = 255
-        colorwheel[0:RY, 1] = np.linspace(0, 255, RY)
-        col += RY
-
-        colorwheel[col:col + YG, 0] = np.linspace(255, 0, YG)
-        colorwheel[col:col + YG, 1:2] = 255
-        col += YG
-
-        colorwheel[col:col + GC, 1:2] = 255
-        colorwheel[col:col + GC, 2] = np.linspace(0, 255, GC)
-        col += GC
-
-        colorwheel[col:col + CB, 1] = np.linspace(255, 0, CB)
-        colorwheel[col:col + CB, 2:] = 255
-        col += CB
-
-        colorwheel[col:col + BM, 0] = np.linspace(0, 255, BM)
-        colorwheel[col:col + BM, 2:] = 255
-        col += BM
-
-        colorwheel[col:col + MR, 0:1] = 255
-        colorwheel[col:col + MR, 2] = np.linspace(255, 0, MR)
-        col += MR
-
-        return colorwheel
-
-    def compute_color(self, u, v):
-        """
-        compute optical flow color map
-        :param u: optical flow horizontal map
-        :param v: optical flow vertical map
-        :return: optical flow in color code
-        """
-        [h, w] = u.shape
-        img = np.zeros([h, w, 3])
-        nanIdx = np.isnan(u) | np.isnan(v)  # the where flows are nan.
-        u[nanIdx] = 0
-        v[nanIdx] = 0
-
-        ncols = self.colorwheel.shape[0]
-
-        rad = np.sqrt(u ** 2 + v ** 2)
-
-        angle = np.arctan2(-v, -u) / np.pi
-
-        fk = (angle + 1) / 2 * (ncols - 1) + 1
-
-        k0 = np.floor(fk).astype(int)
-
-        k1 = k0 + 1
-        k1[k1 == ncols + 1] = 1
-        f = fk - k0
-
-        for i in range(0, self.colorwheel.shape[1]):
-            tmp = self.colorwheel[:, i]
-            col0 = tmp[k0 - 1] / 255
-            col1 = tmp[k1 - 1] / 255
-            col = (1 - f) * col0 + f * col1
-
-            idx = rad <= 1
-            col[idx] = 1 - rad[idx] * (1 - col[idx])
-            notidx = np.logical_not(idx)
-
-            col[notidx] *= 0.75
-            img[:, :, i] = np.uint8(np.floor(255 * col * (1 - nanIdx)))
-        return img
-
-    # visualization
-    def flow_to_image(self, flow):
-        """
-        Convert flow into middlebury color code image
-        :param flow: optical flow map
-        :return: optical flow image in middlebury color
-        """
-        # fx and fy optical flow
-        u = flow[:, :, 0].cpu().detach().numpy()
-        v = flow[:, :, 1].cpu().detach().numpy()
-
-        # the where flows are too large.
-        idxUnknow = (abs(u) > UNKNOWN_FLOW_THRESH) | (abs(v) > UNKNOWN_FLOW_THRESH)
-        u[idxUnknow] = 0
-        v[idxUnknow] = 0
-
-        rad = np.sqrt(u ** 2 + v ** 2)
-        maxrad = max(-1, np.max(rad))
-
-        # print ("max flow: %.4f\nflow range:\nu = %.3f .. %.3f\nv = %.3f .. %.3f" % (maxrad, minu,maxu, minv, maxv))
-
-        u = u / (maxrad + np.finfo(float).eps)
-        v = v / (maxrad + np.finfo(float).eps)
-
-        img = self.compute_color(u, v)
-
-        idx = np.repeat(idxUnknow[:, :, np.newaxis], 3, axis=2)
-        img[idx] = 0
-
-        return np.uint8(img)
-
+arguments_strModel = 'F'        # SpyNet - Sintel final
+SpyNet_model_dir = './models/'  # SpyNet模型参数目录
 
 class TOFlow(torch.nn.Module):
-    def __init__(self, h, w):
+    def __init__(self, h, w, cuda):
         super(TOFlow, self).__init__()
         self.height = h
         self.width = w
-        self.visual = visualization()
+        self.cuda = cuda
 
         class SpyNet(torch.nn.Module):
-            def __init__(self):
+            def __init__(self, cuda):
                 super(SpyNet, self).__init__()
+                self.cuda = cuda
 
                 class Preprocess(torch.nn.Module):
                     def __init__(self):
@@ -193,9 +75,9 @@ class TOFlow(torch.nn.Module):
                 # end
 
                 class Backward(torch.nn.Module):
-                    def __init__(self):
+                    def __init__(self, cuda):
                         super(Backward, self).__init__()
-
+                        self.cuda = cuda
                     # end
 
                     def forward(self, tensorInput, tensorFlow):
@@ -213,7 +95,10 @@ class TOFlow(torch.nn.Module):
                                                                                                 tensorFlow.size(2), 1). \
                                 expand(tensorFlow.size(0), -1, -1, tensorFlow.size(3))
                             # mix them into a original flow. 组合成初始flow网格
-                            self.tensorGrid = torch.cat([tensorHorizontal, tensorVertical], 1).cuda()
+                            if self.cuda:
+                                self.tensorGrid = torch.cat([tensorHorizontal, tensorVertical], 1).cuda()
+                            else:
+                                self.tensorGrid = torch.cat([tensorHorizontal, tensorVertical], 1)
                         # end
 
                         tensorFlow = torch.cat([tensorFlow[:, 0:1, :, :] / ((tensorInput.size(3) - 1.0) / 2.0),
@@ -231,7 +116,7 @@ class TOFlow(torch.nn.Module):
                 # initialize the weight of Gk in 6-layers pyramid. 初始化6层金字塔的Gk的权重
                 self.moduleBasic = torch.nn.ModuleList([Basic(intLevel) for intLevel in range(6)])
 
-                self.moduleBackward = Backward()
+                self.moduleBackward = Backward(cuda=self.cuda)
 
             # end
 
@@ -313,6 +198,7 @@ class TOFlow(torch.nn.Module):
             # Spatial transformer network forward function
             def stn(self, x):
                 xs = self.localization(x)
+                xs = torch.nn.functional.interpolate(input=xs, size=(60, 108), mode='bilinear', align_corners=False)
                 xs = xs.view(-1, 10 * 60 * 108)
                 theta = self.fc_loc(xs)
                 theta = theta.view(-1, 2, 3)
@@ -373,7 +259,6 @@ class TOFlow(torch.nn.Module):
             Three-layers ResNet/ResBlock
             reference: https://blog.csdn.net/chenyuping333/article/details/82344334
             """
-
             def __init__(self):
                 super(ResNet, self).__init__()
                 self.conv1 = torch.nn.Conv2d(in_channels=3, out_channels=64, kernel_size=9, padding=8 // 2)
@@ -389,30 +274,27 @@ class TOFlow(torch.nn.Module):
                 Fx = torch.nn.functional.relu(self.conv1(x))
                 Fx = torch.nn.functional.relu(self.conv2(Fx))
                 Fx = torch.nn.functional.relu(self.conv3(Fx) + x)
-                # Fx = torch.nn.functional.tanh(self.conv1(x))
-                # Fx = torch.nn.functional.tanh(self.conv2(Fx))
-                # Fx = torch.nn.functional.tanh(self.conv3(Fx))
                 return Fx
 
             def forward(self, tframe1, tframe2):
                 aver = (tframe1 + tframe2) / 2
                 result = self.ResBlock(aver)
                 return result
-                # return aver
 
-        self.SpyNet = SpyNet()  # SpyNet层
+
+        self.SpyNet = SpyNet(cuda=self.cuda)  # SpyNet层
         # for param in self.SpyNet.parameters():  # fix
         #     param.requires_grad = False
 
         self.STN = STN()  # STN层
 
-        self.warp = warp(self.height, self.width)
+        self.warp = warp(self.height, self.width, cuda=self.cuda)
 
         self.ResNet = ResNet()
         # self.ResNet.apply(self.ResNet.initialize)
 
     # frameFirst, frameSecond should be TensorFloat
-    def forward(self, frameFirst, frameSecond, pltflag, epoch):
+    def forward(self, frameFirst, frameSecond):
         """
         :param frameFirst: the first frame
         :param frameSecond: the second frame
@@ -425,58 +307,11 @@ class TOFlow(torch.nn.Module):
         opticalflow2 /= 2
         warpframeFirst = self.STN(frameFirst)
         warpframeSecond = self.STN(frameSecond)
-        # print('warpframe: [%f,%f]' % (warpframeFirst.min().data, warpframeFirst.max().data))
         # warpframe: [batch_size=1, n_channels=3, h, w]
         warp1 = self.warp(warpframeFirst, opticalflow2)
         warp2 = self.warp(warpframeSecond, opticalflow1)
-        # print('warp: [%f,%f]' % (warp1.min().data, warp1.max().data))
         # warp: [batch_size=1, n_channels=3, h, w]
         Img = self.ResNet(warp1, warp2)
-        # print('Img: [%f,%f]' % (Img.min().data, Img.max().data))
         # Img: [batch_size=1, n_channels=3, h, w]
 
-        if pltflag:
-            plt.figure(num=233, figsize=(45, 20))
-            plt.title('%d' % (epoch + 1))
-            # plt.subplot(2, 4, 1)
-            # plt.imshow(frameFirst[0, :, :, :].permute(1, 2, 0).cpu().detach().numpy())
-            # plt.axis('off')
-            # plt.subplot(2, 4, 5)
-            # plt.imshow(frameSecond[0, :, :, :].permute(1, 2, 0).cpu().detach().numpy())
-            # plt.axis('off')
-
-            img1 = self.visual.flow_to_image(opticalflow1[0, :, :, :].permute(1, 2, 0))
-            img2 = self.visual.flow_to_image(opticalflow2[0, :, :, :].permute(1, 2, 0))
-            # plt.subplot(4, 4, 6)
-            plt.subplot(2, 4, 1)
-            plt.imshow(img1)
-            plt.axis('off')
-            # plt.subplot(4, 4, 10)
-            plt.subplot(2, 4, 5)
-            plt.imshow(img2)
-            plt.axis('off')
-
-            # plt.subplot(4, 4, 2)
-            plt.subplot(2, 4, 2)
-            plt.imshow(warpframeFirst[0, :, :, :].permute(1, 2, 0).cpu().detach().numpy())
-            plt.axis('off')
-            # plt.subplot(4, 4, 14)
-            plt.subplot(2, 4, 6)
-            plt.imshow(warpframeSecond[0, :, :, :].permute(1, 2, 0).cpu().detach().numpy())
-            plt.axis('off')
-
-            plt.subplot(2, 4, 3)
-            plt.imshow(warp1[0, :, :, :].permute(1, 2, 0).cpu().detach().numpy())
-            plt.axis('off')
-            plt.subplot(2, 4, 7)
-            plt.imshow(warp2[0, :, :, :].permute(1, 2, 0).cpu().detach().numpy())
-            plt.axis('off')
-
-            plt.subplot(1, 4, 4)
-            plt.imshow(Img[0, :, :, :].permute(1, 2, 0).cpu().detach().numpy())
-            plt.axis('off')
-            if not os.path.exists('./visualization'):
-                os.mkdir('./visualization')
-            plt.savefig('./visualization/%d.jpg' % epoch, dpi=200, bbox_inches='tight')
-            plt.close(233)
         return Img

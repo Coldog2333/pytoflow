@@ -10,7 +10,7 @@ What's more, you can describe it as the python version of the TOFlow presented t
 
 #### PyTorch
 
-  Our implementation is based on PyTorch 0.4.0 ([https://pytorch.org/](https://pytorch.org/)).
+  Our implementation is based on PyTorch 0.4.1 ([https://pytorch.org/](https://pytorch.org/)).
 
 #### PIL and matplotlib
 

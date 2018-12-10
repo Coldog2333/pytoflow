@@ -7,11 +7,12 @@ What's more, you can describe it as the python version of the TOFlow presented t
 
 ## Evaluation
 
-| Methods | Vimeo interp.<br>PSNR SSIM
-| -- | -- |
-| TOFlow | 33.53 0.9668 |
-| TOFlow + Mask | 33.73 0.9682 |
-| pyTOFlow | 33.05 0.9633 |
+#### Vimeo interp.
+| Methods | PSNR | SSIM |
+| :-- | -- | -- |
+| TOFlow | 33.53 | 0.9668 |
+| TOFlow + Mask | 33.73 | 0.9682 |
+| pyTOFlow | 33.05 | 0.9633 |
 
 ## Prerequisites
 

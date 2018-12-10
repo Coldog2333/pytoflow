@@ -1,10 +1,17 @@
-# pytoflow
+# pyTOFlow
 
 This repository is based on the paper 'TOFlow: Video Enhancement with Task-Oriented Flow'. It contains some pre-trained models and all of the codes we used including training code, Network structure and so on.
 
 
 What's more, you can describe it as the python version of the TOFlow presented there ->  [toflow](https://github.com/anchen1011/toflow)
 
+## Evaluation
+
+| Methods | Vimeo interp.<br>PSNR SSIM
+| -- | -- |
+| TOFlow | 33.53 0.9668 |
+| TOFlow + Mask | 33.73 0.9682 |
+| pyTOFlow | 33.05 0.9633 |
 
 ## Prerequisites
 

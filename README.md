@@ -1,6 +1,6 @@
 # pyTOFlow
 
-This repository is based on the paper 'TOFlow: Video Enhancement with Task-Oriented Flow'. It contains some pre-trained models and all of the codes we used including training code, Network structure and so on.
+This repository is based on the paper 'TOFlow: Video Enhancement with Task-Oriented Flow'. It contains some pre-trained models and all of the codes we used including training code, network structure and so on.
 
 
 What's more, you can describe it as the python version of the TOFlow presented there ->  [toflow](https://github.com/anchen1011/toflow)

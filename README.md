@@ -5,7 +5,7 @@ This repository is based on the paper 'TOFlow: Video Enhancement with Task-Orien
 
 What's more, you can describe it as the python version of the TOFlow presented there ->  [toflow](https://github.com/anchen1011/toflow)
 
-## Evaluation
+## Evaluation Result
 
 #### Vimeo interp.
 | Methods | PSNR | SSIM |
@@ -47,6 +47,7 @@ Our current release has been tested on Ubuntu 16.04 LTS.
 sh git clone https://github.com/Coldog2333/pytoflow.git
 ```
 #### Install some required packages
+
 
 
 ## Train
@@ -93,7 +94,7 @@ python3 evaluate.py [[option] [value]]...
 + **--gpuID** [optional]: No. of the GPU you want to use. default: no gpu.
 + **-h**, **--help**: get help.
 
-####Examples
+#### Examples
 
 + interpolation
 ```

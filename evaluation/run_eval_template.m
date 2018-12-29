@@ -1,15 +1,15 @@
 function [p, s, a] = run_eval_template(nim, gtdir, esdir, sampledirs, gtsuffix, essuffix)
 
-imlist = cell(1, nim);     
+imlist = cell(1, nim);      % 图像list
 count = 0;
-psnrAll = zeros(nim,1);    
-ssimAll = zeros(nim,1);     
+psnrAll = zeros(nim,1);     % psnr数组
+ssimAll = zeros(nim,1);     % psnr数组
 absAll = zeros(nim,1);
 
 for i = 1:length(imlist)
   imname = imlist{i};
-  imgt = im2double(imread(fullfile(gtdir, sampledirs{i}, gtsuffix)));   
-  imes = im2double(imread(fullfile(esdir, sampledirs{i}, essuffix)));   
+  imgt = im2double(imread(fullfile(gtdir, sampledirs{i}, gtsuffix)));   % read target figname
+  imes = im2double(imread(fullfile(esdir, sampledirs{i}, essuffix)));   % read output figname
   [h,w,c] = size(imgt);
   if c == 1
     tmp = zeros(h,w,3);

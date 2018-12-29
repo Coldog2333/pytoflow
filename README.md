@@ -48,7 +48,7 @@ sh git clone https://github.com/Coldog2333/pytoflow.git
 ```
 #### **Install some required packages**
 
-#### **Download tiny Vimeo dataset** (0.1% of Vimeo-90K)
+#### **Download tiny Vimeo dataset** (1‰ of Vimeo-90K)
 
 You would like to have a quick start to understand the whole features of pytoflow. Then you can download the tiny Vimeo dataset and have a try. The tiny Vimeo dataset is chosen randomly from the origin Vimeo dataset and the processed Vimeo-90K (mixed noise, blurred).
 

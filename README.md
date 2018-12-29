@@ -65,18 +65,11 @@ python3 train.py [[option] [value]]...
 
 
 #### Examples
-+ interpolation
 ```
 python3 train.py --task interp --dataDir ./tiny/vimeo_triplet/sequences --pathlist ./tiny/vimeo_triplet/tri_trainlist.txt --gpuID 1
-```
 
-+ denoising
-```
 python3 train.py --task denoising --dataDir ./tiny/vimeo_septuplet/sequences --ex_dataDir ./tiny/vimeo_septuplet/sequences_with_noise --pathlist ./tiny/vimeo_septuplet/sep_trainlist.txt --gpuID 1
-```
 
-+ super resolution
-```
 python3 train.py --task super-resolution --dataDir ./tiny/vimeo_septuplet/sequences --ex_dataDir ./tiny/vimeo_septuplet/sequences_blur --pathlist ./tiny/vimeo_septuplet/sep_trainlist.txt --gpuID 1
 ```
 

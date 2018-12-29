@@ -16,23 +16,23 @@ What's more, you can describe it as the python version of the TOFlow presented t
 
 ## Prerequisites
 
-#### PyTorch
+#### **PyTorch**
 
   Our implementation is based on PyTorch 0.4.1 ([https://pytorch.org/](https://pytorch.org/)).
 
-#### PIL and matplotlib
+#### **PIL** and **matplotlib**
 
   For loading images.
 
-#### opencv-python(cv2)
+#### **opencv-python(cv2)**
 
   For processing videos.
 
-#### CUDA [optional]
+#### **CUDA** [optional]
 
   CUDA is suggested ([https://developer.nvidia.com/cuda-toolkit](https://developer.nvidia.com/cuda-toolkit)) for fast inference. The demo code is still runnable without CUDA, but much slower.
 
-#### FFmpeg [optional]
+#### **FFmpeg** [optional]
 
   We use FFmpeg ([http://ffmpeg.org/](http://ffmpeg.org/)) for processing videos. That's ok if you don't have a FFmpeg, but maybe it will cost you lot of time to processing.
 
@@ -64,7 +64,7 @@ unzip tiny.zip
 ```
 python3 train.py [[option] [value]]...
 ```
-#### Options
+#### **Options**
 
 + **--task**: training task, like interp, denoising, super-resolution. valid values:[interp, denoise, denoising, sr, super-resolution]
 + **--dataDir**: the directory of the image dataset(Vimeo-90K)
@@ -74,7 +74,7 @@ python3 train.py [[option] [value]]...
 + **-h**, **--help**: get help.
 
 
-#### Examples
+#### **Examples**
 ```
 python3 train.py --task interp --dataDir ./tiny/vimeo_triplet/sequences --pathlist ./tiny/vimeo_triplet/tri_trainlist.txt --gpuID 1
 python3 train.py --task denoising --dataDir ./tiny/vimeo_septuplet/sequences --ex_dataDir ./tiny/vimeo_septuplet/sequences_with_noise --pathlist ./tiny/vimeo_septuplet/sep_trainlist.txt --gpuID 1
@@ -86,7 +86,7 @@ python3 train.py --task super-resolution --dataDir ./tiny/vimeo_septuplet/sequen
 ```
 python3 evaluate.py [[option] [value]]...
 ```
-#### Options
+#### **Options**
 
 + **--task**: training task, like interp, denoising, super-resolution. valid values:[interp, denoise, denoising, sr, super-resolution]
 + **--dataDir**: the directory of the input image dataset(Vimeo-90K, Vimeo-90K with noise, blurred Vimeo-90K)
@@ -95,7 +95,7 @@ python3 evaluate.py [[option] [value]]...
 + **--gpuID** [optional]: No. of the GPU you want to use. default: no gpu.
 + **-h**, **--help**: get help.
 
-#### Examples
+#### **Examples**
 
 ```
 python3 evaluate.py --task interp --dataDir ./tiny/vimeo_triplet/sequences --pathlist ./tiny/vimeo_triplet/tri_testlist.txt --model ./toflow_models/interp.pkl --gpuID 1
@@ -108,7 +108,7 @@ python3 evaluate.py --task super-resolution --dataDir ./tiny/vimeo_septuplet/seq
 python3 run.py --f1 example/im1.png --f2 example/im3.png --o example/out.png --gpuID 0
 ``` 
 
-#### Options
+#### **Options**
 
 + **--f1**: filename of the first frame
 + **--f2**: filename of the second frame
@@ -123,3 +123,4 @@ python3 run.py --f1 example/im1.png --f2 example/im3.png --o example/out.png --g
 
 
 ## Acknowledgments
+Thanks for the author of the origin paper [@anchen1011](https://github.com/anchen1011), he gives me a lot of advice during the time I reproduce this paper and teaches me a lot. Then thanks for the School of Mathematics, Sun Yat-Sen University that provices me the computing server. I can do nothing without this powerful server. At last, thanks for the accompany of my teammates Qian and Junjie.

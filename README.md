@@ -43,13 +43,27 @@ Our current release has been tested on Ubuntu 16.04 LTS.
 
 #### Clone the repository
 
-```sh
-git clone https://github.com/Coldog2333/pytoflow.git
+```
+sh git clone https://github.com/Coldog2333/pytoflow.git
 ```
 #### Install some required packages
 
 
 ## Train
+```
+python3 train.py [[option] [value]]...
+```
+#### Options
+
++ **--task**: training task, like interp, denoising, super-resolution. valid values:[interp, denoise, denoising, sr, super-resolution]
++ **--dataDir**: the directory of the image dataset(Vimeo-90K)
++ **--ex_dataDir**: the directory of the preprocessed image dataset, for example, the Vimeo-90K mixed by Gaussian noise.
++ **--pathlist**: the text file records which are the images for train.
++ **--gpuID** [optional]: No. of the GPU you want to use. default: no gpu.
++ **-h**, **--help**: get help.
+
+
+#### Examples
 + interpolation
 ```
 python3 train.py --task interp --dataDir ./tiny/vimeo_triplet/sequences --pathlist ./tiny/vimeo_triplet/tri_trainlist.txt --gpuID 1
@@ -66,6 +80,21 @@ python3 train.py --task super-resolution --dataDir ./tiny/vimeo_septuplet/sequen
 ```
 
 ## Evaluate
+
+```
+python3 evaluate.py [[option] [value]]...
+```
+#### Options
+
++ **--task**: training task, like interp, denoising, super-resolution. valid values:[interp, denoise, denoising, sr, super-resolution]
++ **--dataDir**: the directory of the input image dataset(Vimeo-90K, Vimeo-90K with noise, blurred Vimeo-90K)
++ **--pathlist**: the text file records which are the images for train.
++ **--model**: the path of the model used.
++ **--gpuID** [optional]: No. of the GPU you want to use. default: no gpu.
++ **-h**, **--help**: get help.
+
+####Examples
+
 + interpolation
 ```
 python3 evaluate.py --task interp --dataDir ./tiny/vimeo_triplet/sequences --pathlist ./tiny/vimeo_triplet/tri_testlist.txt --model ./toflow_models/interp.pkl --gpuID 1

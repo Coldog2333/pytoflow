@@ -1,9 +1,9 @@
 function [p, s, a] = run_eval_template(nim, gtdir, esdir, sampledirs, gtsuffix, essuffix)
 
-imlist = cell(1, nim);      % Í¼Ïñlist
+imlist = cell(1, nim);      % Í¼ï¿½ï¿½list
 count = 0;
-psnrAll = zeros(nim,1);     % psnrÊý×é
-ssimAll = zeros(nim,1);     % psnrÊý×é
+psnrAll = zeros(nim,1);     % psnrï¿½ï¿½ï¿½ï¿½
+ssimAll = zeros(nim,1);     % psnrï¿½ï¿½ï¿½ï¿½
 absAll = zeros(nim,1);
 
 for i = 1:length(imlist)
@@ -31,7 +31,7 @@ for i = 1:length(imlist)
   psnrAll(i) = psnr(imes, imgt);
   ssimAll(i) = ssim(imes, imgt);
   absAll(i) = mean2(abs(imes - imgt));
-  fprintf('%d/%d\n',i,nim);
+  fprintf('%d/%d\r',i,nim);
 end
 
 %%

@@ -12,7 +12,19 @@ What's more, you can describe it as the python version of the TOFlow presented t
 | :-- | -- | -- |
 | TOFlow | 33.53 | 0.9668 |
 | TOFlow + Mask | **33.73** | **0.9682** |
-| pyTOFlow | 33.05 | 0.9633 |
+| pyTOFlow | 33.10 | 0.9631 |
+
+#### Vimeo-Gaussian
+| Methods | PSNR | SSIM |
+| :-- | -- | -- |
+| TOFlow | 29.10 | **0.9544** |
+| pyTOFlow | **34.73** | 0.9518 |
+
+#### Vimeo SR
+| Methods | PSNR | SSIM |
+| :-- | -- | -- |
+| TOFlow | **33.08** | **0.9417** |
+| pyTOFlow | 31.46 | 0.9230 |
 
 ## Prerequisites
 

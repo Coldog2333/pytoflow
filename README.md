@@ -9,6 +9,17 @@ What's more, you can describe it as the python version of the TOFlow presented t
 
 [![IMAGE ALT TEXT](unstable/pytoflow.png)](https://www.bilibili.com/video/av39553558/ "Video Demo")
 
+## HTML5
+
+<iframe 
+    src="http://player.bilibili.com/player.html?aid=39553558&cid=69488291&page=1" 
+    scrolling="no" 
+    border="0" 
+    frameborder="no" 
+    framespacing="0" 
+    allowfullscreen="true">
+</iframe>
+
 ## Evaluation Result
 
 #### Vimeo interp.

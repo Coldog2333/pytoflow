@@ -5,9 +5,9 @@ This repository is based on the paper 'TOFlow: Video Enhancement with Task-Orien
 
 What's more, you can describe it as the python version of the TOFlow presented there ->  [toflow](https://github.com/anchen1011/toflow)
 
-## Demo
+## Video Demo
 
-<iframe src="//player.bilibili.com/player.html?aid=39553558&cid=69488291&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>
+[![IMAGE ALT TEXT](unstable/pytoflow.png)](https://www.bilibili.com/video/av39553558/ "Video Demo")
 
 ## Evaluation Result
 

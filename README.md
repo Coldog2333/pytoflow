@@ -2,8 +2,9 @@
 
 This repository is based on the paper 'TOFlow: Video Enhancement with Task-Oriented Flow'. It contains some pre-trained models and all of the codes we used including training code, network structure and so on.
 
-
 What's more, you can describe it as the python version of the TOFlow presented there ->  [toflow](https://github.com/anchen1011/toflow)
+
+*Note*: There are still some TODOs work should be done now, it is welcome to create a pull request to improve this repository. Let's make it better for fun and application!
 
 ## Video Demo
 
@@ -74,8 +75,6 @@ sh download_tiny_dataset.sh
 unzip tiny.zip
 ```
 
-
-
 ## Train
 ```
 python3 train.py [[option] [value]]...
@@ -140,3 +139,11 @@ python3 run.py --f1 example/im1.png --f2 example/im3.png --o example/out.png --g
 
 ## Acknowledgments
 Thanks for the author of the origin paper [@anchen1011](https://github.com/anchen1011), he gives me a lot of advice during the time I reproduce this paper and teaches me a lot. Then thanks for the School of Mathematics, Sun Yat-Sen University that provices me the computing server. I can do nothing without this powerful server. At last, thanks for the accompany of my teammates Qian and Junjie.
+
+
+## TODO
++ A relatively poor but much more cheaper version of pytoflow for application.
+For example, we can omit the last resnet layer that requires an extra system resources but only promotes a little improvement. After a comprehensive ablation analysis, we can convincingly determine which structures we can omit without dropping too much performance.
+
++ To support the cases when batch size is larger than 1 while training and testing.
+Maybe we can accelarate it with running more than 1 sequence of pictures at a time (using matrix multiplication, etc.)

@@ -4,7 +4,7 @@ This repository is based on the paper 'TOFlow: Video Enhancement with Task-Orien
 
 What's more, you can describe it as the python version of the TOFlow presented there ->  [toflow](https://github.com/anchen1011/toflow)
 
-*Note*: There are still some TODOs work should be done now, it is welcome to create a pull request to improve this repository. Let's make it better for fun and application!
+**Note**: There are still some TODOs should be done now, it is welcome to create a pull request to improve this repository. Let's make it better for fun and application!
 
 ## Video Demo
 

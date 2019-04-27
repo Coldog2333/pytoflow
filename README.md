@@ -142,8 +142,10 @@ Thanks for the author of the origin paper [@anchen1011](https://github.com/anche
 
 
 ## TODO
-+ A relatively poor but much more cheaper version of pytoflow for application.
++ **A relatively poor but much more cheaper version of pytoflow for application.**
+
 For example, we can omit the last resnet layer that requires an extra system resources but only promotes a little improvement. After a comprehensive ablation analysis, we can convincingly determine which structures we can omit without dropping too much performance.
 
-+ To support the cases when batch size is larger than 1 while training and testing.
++ **To support the cases when batch size is larger than 1 while training and testing.**
+
 Maybe we can accelarate it with running more than 1 sequence of pictures at a time (using matrix multiplication, etc.)

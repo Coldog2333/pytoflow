@@ -211,7 +211,7 @@ for epoch in range(start_epoch, EPOCH):
             os.mkdir(os.path.join(work_place, 'toflow_models'))
         torch.save(toflow.state_dict(), os.path.join(work_place, 'toflow_models', model_name + '_best_params.pkl'))
         print('Saved.\n')
-        check_point = losses / (step + 1)
+        check_loss = losses / (step + 1)
 
 plt.plot(plotx, ploty)
 plt.savefig(Training_pic_path)

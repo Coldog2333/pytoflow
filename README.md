@@ -40,6 +40,8 @@ What's more, you can describe it as the python version of the TOFlow presented t
 #### **PIL** and **matplotlib**
 
   For loading images.
+  Check on matplotlib v2.0.2, but it doesn't work on higher version of it like v3.1.0 (Noted that v2.0.2 is not the bar.)
+  See [Issue#6](https://github.com/Coldog2333/pytoflow/issues/6), [Issue#7](https://github.com/Coldog2333/pytoflow/issues/6) for details.
 
 #### **opencv-python(cv2)**
 

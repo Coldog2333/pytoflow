@@ -1,9 +1,9 @@
 import math
 import torch
-import torch.utils.serialization
+# import torch.utils.serialization   # it was removed in torch v1.0.0 or higher version.
 
 arguments_strModel = 'sintel-final'
-SpyNet_model_dir = './models'  # SpyNet模型参数目录
+SpyNet_model_dir = './models'  # The directory of SpyNet's weights
 
 def normalize(tensorInput):
     tensorRed = (tensorInput[:, 0:1, :, :] - 0.485) / 0.229

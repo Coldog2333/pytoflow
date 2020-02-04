@@ -122,7 +122,7 @@ python3 evaluate.py --task super-resolution --dataDir ./tiny/vimeo_septuplet/seq
 ## Usage
 
 ```
-python3 run.py --f1 example/im1.png --f2 example/im3.png --o example/out.png --gpuID 0
+python3 ./unstable/run.py --f1 ./unstable/example/im1.png --f2 ./unstable/example/im3.png --o ./unstable/example/out.png --gpuID 0
 ``` 
 
 #### **Options**

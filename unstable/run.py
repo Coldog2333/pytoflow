@@ -3,7 +3,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import torch.utils.serialization
+# import torch.utils.serialization    # it was removed in torch v1.0.0 or higher version.
 import math
 import PIL
 from Network import TOFlow
@@ -84,7 +84,7 @@ def Estimate(net, tensorFirst=None, tensorSecond=None, Firstfilename='', Secondf
 
 
         tensorFlow = torch.nn.functional.interpolate(
-            input=net(tensorPreprocessedFirst, tensorPreprocessedSecond),
+            input=net(torch.stack([tensorPreprocessedFirst, tensorPreprocessedSecond], dim=1)),
             size=(intHeight, intWidth), mode='bilinear', align_corners=False)
 
         tensorOutput.resize_(3, intHeight, intWidth).copy_(tensorFlow[0, :, :, :])
@@ -110,7 +110,7 @@ if __name__ == '__main__':
     intPreprocessedHeight = int(math.floor(math.ceil(height / 32.0) * 32.0))  # 长度弄成32的倍数，便于上下采样
 
     print('Loading TOFlow Net... ', end='')
-    net = TOFlow(intPreprocessedHeight, intPreprocessedWidth, cuda_flag=CUDA)
+    net = TOFlow(intPreprocessedHeight, intPreprocessedWidth, task='interp', cuda_flag=CUDA)
     net.load_state_dict(torch.load(os.path.join(workplace, 'toflow_models', model_name + '.pkl')))
     if CUDA:
         net.eval().cuda()
@@ -124,5 +124,6 @@ if __name__ == '__main__':
     #         f2name=os.path.join(test_pic_dir, 'im3.png'), fname=outputname)
     print('Processing...')
     predict = Estimate(net, Firstfilename=frameFirstName, Secondfilename=frameSecondName, cuda_flag=CUDA)
+    print(predict, np.min(predict), np.max(predict))
     plt.imsave(frameOutName, predict)
     print('%s Saved.' % frameOutName)

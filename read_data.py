@@ -3,6 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import torch
 import torch.utils.data
+from PIL import Image
+import torchvision.transforms.functional as F
 
 class MemoryFriendlyLoader(torch.utils.data.Dataset):
     def __init__(self, origin_img_dir, pathlistfile, edited_img_dir='', task=''):
@@ -17,26 +19,44 @@ class MemoryFriendlyLoader(torch.utils.data.Dataset):
         pathlist = fp.read().splitlines()
         fp.close()
         return pathlist
+    
+    def concat(self, frames, frame_s):
+        if frames is None:
+            frames = frame_s.unsqueeze(0)
+        else:
+            frames = torch.cat([frames, frame_s.unsqueeze(0)], dim = 0)
+        return frames
 
     def __getitem__(self, index):
-        frames = []
+        frames = None
         path_code = self.pathlist[index]
         if self.task == 'interp':
             N = 2   # 这里的N仅仅是为了下面取framex方便, 并非是论文里的N
             for i in [1, 3]:
-                frames.append(plt.imread(os.path.join(self.origin_img_dir, path_code, 'im%d.png' % i)))                  # load the first and third images
-            frames.append(plt.imread(os.path.join(self.origin_img_dir, path_code, 'im2.png')))                           # load ground truth (the second one)
+                frame_s = F.to_tensor(Image.open(os.path.join(self.origin_img_dir, path_code, 'im{}.png'.format(i))))                # load the first and third images
+                frames = self.concat(frames,frame_s)
+            frame_y = F.to_tensor(Image.open(os.path.join(self.origin_img_dir, path_code, 'im2.png')))                          # load ground truth (the second one)
         else:
             N = 7
             for i in range(7):
-                frames.append(plt.imread(os.path.join(self.edited_img_dir, path_code, 'im%04d.png' % (i + 1))))          # load images with noise.
-            frames.append(plt.imread(os.path.join(self.origin_img_dir, path_code, 'im4.png')))                           # load ground truth
+                frame_s = F.to_tensor(Image.open(os.path.join(self.edited_img_dir, path_code, 'im{:04d}.png'.format(i + 1))))          # load images with noise.
+                frames = self.concat(frames,frame_s)
+            frame_y = F.to_tensor(Image.open(os.path.join(self.origin_img_dir, path_code, 'im4.png')))                           # load ground truth
 
-        frames = np.array(frames)
-        framex = np.transpose(frames[0:N, :, :, :], (0, 3, 1, 2))
-        framey = np.transpose(frames[-1, :, :, :], (2, 0, 1))
-
-        return torch.from_numpy(framex), torch.from_numpy(framey), path_code
+        return frames, frame_y, path_code
 
     def __len__(self):
         return self.count
+    
+
+    
+#### Memory Friendly
+# train_list = './tiny/vimeo_septuplet/sep_trainlist.txt'
+# root = './tiny/vimeo_septuplet/sequences'
+# data_set = MemoryFriendlyLoader(root , train_list, root)
+
+# data_loader = DataLoader(data_set,batch_size=10)#, shuffle=True)
+
+# for i, (lr,hr, frame_name) in enumerate(data_loader):
+#     print(i, lr.shape, hr.shape)
+

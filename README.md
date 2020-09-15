@@ -39,9 +39,7 @@ What's more, you can describe it as the python version of the TOFlow presented t
 
 #### **PIL** and **matplotlib**
 
-  For loading images.
-  Check on matplotlib v2.0.2, but it doesn't work on higher version of it like v3.1.0 (Noted that v2.0.2 is not the bar.)
-  See [Issue#6](https://github.com/Coldog2333/pytoflow/issues/6), [Issue#7](https://github.com/Coldog2333/pytoflow/issues/6) for details.
+  For loading images PIL is used.
 
 #### **opencv-python(cv2)**
 
@@ -148,6 +146,6 @@ Thanks for the author of the origin paper [@anchen1011](https://github.com/anche
 
 For example, we can omit the last resnet layer that requires an extra system resources but only promotes a little improvement. After a comprehensive ablation analysis, we can convincingly determine which structures we can omit without dropping too much performance.
 
-+ **To support the cases when batch size is larger than 1 while training and testing.**
++ **[IMPLEMENTED]To support the cases when batch size is larger than 1 while training and testing.**
 
 Maybe we can accelarate it with running more than 1 sequence of pictures at a time (using matrix multiplication, etc.)

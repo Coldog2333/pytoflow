@@ -1,3 +1,6 @@
+# --task interp --dataDir ./tiny/vimeo_triplet/sequences --pathlist ./tiny/vimeo_triplet/tri_trainlist.txt --gpuID 1
+# --task sr --dataDir ./tiny/vimeo_septuplet/sequences --pathlist ./tiny/vimeo_septuplet/sep_trainlist.txt --gpuID 1 --ex_dataDir ./tiny/vimeo_septuplet/sequences_blur/
+
 import os
 import datetime
 import torch
@@ -6,7 +9,7 @@ import multiprocessing
 import psutil
 import sys
 import getopt
-from Network import TOFlow
+from Network_testing import TOFlow
 from read_data import MemoryFriendlyLoader
 
 # ------------------------------
@@ -66,7 +69,7 @@ if gpuID == None:
     cuda_flag = False
 else:
     cuda_flag = True
-    torch.cuda.set_device(gpuID)
+    torch.cuda.device(0)
 # --------------------------------------------------------------
 # Hyper Parameters
 if task == 'interp':
@@ -75,7 +78,7 @@ elif task in ['denoise', 'denoising', 'sr', 'super-resolution']:
     LR = 1 * 1e-4
 EPOCH = 5
 WEIGHT_DECAY = 1e-4
-BATCH_SIZE = 1
+BATCH_SIZE = 4
 LR_strategy = []
 h = 256
 w = 448
@@ -115,8 +118,6 @@ def delta_time(datetime1, datetime2):
 def save_checkpoint(net, optimizer, epoch, losses, savepath):
     save_json = {
         'cuda_flag': net.cuda_flag,
-        'h': net.height,
-        'w': net.width,
         'net_state_dict': net.state_dict(),
         'optimizer_state_dict': optimizer.state_dict(),
         'epoch': epoch,
@@ -129,8 +130,6 @@ def load_checkpoint(net, optimizer, checkpoint_path):
     checkpoint = torch.load(checkpoint_path)
 
     net.cuda_flag = checkpoint['cuda_flag']
-    net.height = checkpoint['h']
-    net.width = checkpoint['w']
     net.load_state_dict(checkpoint['net_state_dict'])
     optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
     start_epoch = checkpoint['epoch']
@@ -140,7 +139,7 @@ def load_checkpoint(net, optimizer, checkpoint_path):
 
 
 # --------------------------------------------------------------
-toflow = TOFlow(h, w, task=task, cuda_flag=cuda_flag).cuda()
+toflow = TOFlow(task=task, cuda_flag=cuda_flag).cuda()
 
 optimizer = torch.optim.Adam(toflow.parameters(), lr=LR, weight_decay=WEIGHT_DECAY)
 loss_func = torch.nn.L1Loss()

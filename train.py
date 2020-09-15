@@ -9,7 +9,7 @@ import multiprocessing
 import psutil
 import sys
 import getopt
-from Network_testing import TOFlow
+from Network import TOFlow
 from read_data import MemoryFriendlyLoader
 
 # ------------------------------

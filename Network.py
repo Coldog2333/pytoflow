@@ -102,44 +102,44 @@ class SpyNet(torch.nn.Module):
 
 
 class warp(torch.nn.Module):
-    def __init__(self, h, w, cuda_flag):
+    def __init__(self, cuda_flag):
         super(warp, self).__init__()
-        self.height = h
-        self.width = w
-        if cuda_flag:
-            self.addterm = self.init_addterm().cuda()
-        else:
-            self.addterm = self.init_addterm()
+        self.cuda_flag = cuda_flag
 
-    def init_addterm(self):
-        n = torch.FloatTensor(list(range(self.width)))
-        horizontal_term = n.expand((1, 1, self.height, self.width))  # 第一个1是batch size
-        n = torch.FloatTensor(list(range(self.height)))
-        vertical_term = n.expand((1, 1, self.width, self.height)).permute(0, 1, 3, 2)
-        addterm = torch.cat((horizontal_term, vertical_term), dim=1)
-        return addterm
+#used code from https://github.com/NVIDIA/vid2vid/blob/master/models/networks.py
+
+    def get_grid(self, batchsize, rows, cols, cuda_flag, dtype=torch.float32):
+        hor = torch.linspace(-1.0, 1.0, cols)
+        hor.requires_grad = False
+        hor = hor.view(1, 1, 1, cols)
+        hor = hor.expand(batchsize, 1, rows, cols)
+        ver = torch.linspace(-1.0, 1.0, rows)
+        ver.requires_grad = False
+        ver = ver.view(1, 1, rows, 1)
+        ver = ver.expand(batchsize, 1, rows, cols)
+    
+        t_grid = torch.cat([hor, ver], 1)
+        t_grid.requires_grad = False
+    
+        if cuda_flag:
+            return t_grid.cuda()
+        else:
+            return t_grid
 
     def forward(self, frame, flow):
         """
-        :param frame: frame.shape (batch_size=1, n_channels=3, width=256, height=448)
-        :param flow: flow.shape (batch_size=1, n_channels=2, width=256, height=448)
+        :param frame: frame.shape (batch_size=4, n_channels=3, width=256, height=448)
+        :param flow: flow.shape (batch_size=4, n_channels=2, width=256, height=448)
         :return: reference_frame: warped frame
         """
-        if True:
-            flow = flow + self.addterm
-        else:
-            self.addterm = self.init_addterm()
-            flow = flow + self.addterm
-
-        horizontal_flow = flow[0, 0, :, :].expand(1, 1, self.height, self.width)  # 第一个0是batch size
-        vertical_flow = flow[0, 1, :, :].expand(1, 1, self.height, self.width)
-
-        horizontal_flow = horizontal_flow * 2 / (self.width - 1) - 1
-        vertical_flow = vertical_flow * 2 / (self.height - 1) - 1
-        flow = torch.cat((horizontal_flow, vertical_flow), dim=1)
-        flow = flow.permute(0, 2, 3, 1)
-        reference_frame = torch.nn.functional.grid_sample(frame, flow)
-        return reference_frame
+        b, c, h, w = frame.size()        
+        grid = self.get_grid(b, h, w, self.cuda_flag, dtype=flow.dtype)            
+        flow = torch.cat([flow[:, 0:1, :, :] / ((w - 1.0) / 2.0), flow[:, 1:2, :, :] / ((h - 1.0) / 2.0)], dim=1)        
+        final_grid = (grid + flow).permute(0, 2, 3, 1)#.cuda(frame.get_device())
+        if self.cuda_flag:
+            final_grid = final_grid.cuda()
+        output = torch.nn.functional.grid_sample(frame, final_grid)
+        return output
 
 
 class ResNet(torch.nn.Module):
@@ -182,10 +182,8 @@ class ResNet(torch.nn.Module):
 
 
 class TOFlow(torch.nn.Module):
-    def __init__(self, h, w, task, cuda_flag):
+    def __init__(self, task, cuda_flag):
         super(TOFlow, self).__init__()
-        self.height = h
-        self.width = w
         self.task = task
         self.cuda_flag = cuda_flag
 
@@ -193,7 +191,7 @@ class TOFlow(torch.nn.Module):
         # for param in self.SpyNet.parameters():  # fix
         #     param.requires_grad = False
 
-        self.warp = warp(self.height, self.width, cuda_flag=self.cuda_flag)
+        self.warp = warp(cuda_flag=self.cuda_flag)
 
         self.ResNet = ResNet(task=self.task)
 
@@ -225,14 +223,20 @@ class TOFlow(torch.nn.Module):
 
         else:
             raise NameError('Only support: [interp, denoise/denoising, sr/super-resolution]')
-
-        for i in process_index:
-            warpframes[:, i, :, :, :] = self.warp(frames[:, i, :, :, :], opticalflows[:, i, :, :, :])
-        # warpframes: [batch_size=1, img_num=7, n_channels=3, height=256, width=448]
+        B, F, C, H, W = frames.size()
+        n_frames = frames.reshape(B*F, C, H, W)
+        n_opticalflows=opticalflows.reshape(B*F,2,H,W) #2 as of optical_flow 
+        warpframes = self.warp(n_frames, n_opticalflows)
+        # warpframes: [batch_size=4, img_num=7, n_channels=3, height=256, width=448]
+        warpframes = warpframes.reshape(B, F, C, H, W)
 
         Img = self.ResNet(warpframes)
-        # Img: [batch_size=1, n_channels=3, h, w]
+        # Img: [batch_size=4, n_channels=3, h, w]
 
         Img = denormalize(Img)
 
         return Img
+
+# testing
+# net = TOFlow('sr', True).cuda()
+# out = net(torch.rand(10,7,3,128,128).cuda())
